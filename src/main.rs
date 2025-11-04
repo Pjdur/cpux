@@ -46,17 +46,19 @@ fn main() {
         })),
     };
 
-    let column = Column {
+    use layout::row::Row;
+
+    let row = Row {
         children: vec![
             Box::new(text1),
             Box::new(text2),
             Box::new(button),
         ],
-        spacing: 50,
+        spacing: 150,
         start_x: 50,
-        start_y: 50,
+        start_y: 100,
     };
 
     let app = App::new("GUI Framework", 500, 500);
-    app.run(vec![Box::new(column)]);
+    app.run(vec![Box::new(row)]);
 }
