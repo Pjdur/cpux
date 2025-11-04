@@ -2,12 +2,14 @@ mod app;
 mod font;
 mod render;
 mod widget;
+mod layout;
 
 use app::App;
 use font::load_font;
 use image::Rgba;
 use rusttype::Scale;
 use widget::text::Text;
+use layout::column::Column;
 use imageproc::rect::Rect;
 
 fn main() {
@@ -44,6 +46,17 @@ fn main() {
         })),
     };
 
-    let app = App::new("Minimal GUI", 400, 200);
-    app.run(vec![Box::new(text1), Box::new(text2), Box::new(button)]);
+    let column = Column {
+        children: vec![
+            Box::new(text1),
+            Box::new(text2),
+            Box::new(button),
+        ],
+        spacing: 50,
+        start_x: 50,
+        start_y: 50,
+    };
+
+    let app = App::new("GUI Framework", 500, 500);
+    app.run(vec![Box::new(column)]);
 }

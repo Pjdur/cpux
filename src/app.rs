@@ -65,7 +65,7 @@ impl App {
                         *pixel = image::Rgba([255, 255, 255, 255]);
                     }
 
-                    for widget in &widgets {
+                    for widget in &mut widgets {
                         widget.draw(&mut image);
                     }
 
