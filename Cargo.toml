@@ -1,0 +1,13 @@
+[package]
+name = "gui_framework"
+version = "0.1.0"
+authors = ["Your Name <your@email.com>"]
+edition = "2024"
+
+[dependencies]
+image = "0.24"
+imageproc = "0.23.0"
+rusttype = "0.9.0"
+winit = "0.28.7"
+pixels = "0.13"
+env_logger = "0.11.8"
