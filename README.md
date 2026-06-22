@@ -14,6 +14,7 @@ It uses:
 - [`rusttype`](https://crates.io/crates/rusttype)
 - [`image`](https://crates.io/crates/image)
 - [`imageproc`](https://crates.io/crates/imageproc)
+- [`env_logger`](https://crates.io/crates/env_logger) for logging
 
 You can run it for an example:
 ```bash
