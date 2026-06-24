@@ -1,19 +1,17 @@
+use crate::widget::Widget;
+use image::{Rgba, RgbaImage};
 use pixels::{Pixels, SurfaceTexture};
 use winit::{
-    event::{Event, WindowEvent},
+    event::{ElementState, Event, MouseButton, WindowEvent},
     event_loop::{ControlFlow, EventLoop},
     window::{Window, WindowBuilder},
 };
-use image::RgbaImage;
-use crate::widget::Widget;
-use crate::widget::button::Button;
 
 pub struct App {
     pub pixels: Pixels,
     pub window: Window,
     pub event_loop: EventLoop<()>,
-    pub width: u32,
-    pub height: u32,
+    pub framebuffer: RgbaImage,
 }
 
 impl App {
@@ -27,13 +25,13 @@ impl App {
 
         let surface = SurfaceTexture::new(width, height, &window);
         let pixels = Pixels::new(width, height, surface).unwrap();
+        let framebuffer = RgbaImage::new(width, height);
 
         Self {
             pixels,
             window,
             event_loop,
-            width,
-            height,
+            framebuffer,
         }
     }
 
@@ -41,57 +39,56 @@ impl App {
         let mut cursor_pos = (0, 0);
 
         self.event_loop.run(move |event, _, control_flow| {
-            *control_flow = ControlFlow::Poll;
+            // 1. Tell winit to sleep and WAIT for an event instead of running constantly
+            *control_flow = ControlFlow::Wait;
 
             match event {
                 Event::WindowEvent { event, .. } => match event {
                     WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
                     WindowEvent::Resized(size) => {
                         self.pixels.resize_surface(size.width, size.height);
+                        self.window.request_redraw(); // Redraw because window size changed
                     }
                     WindowEvent::CursorMoved { position, .. } => {
-                        cursor_pos = (position.x as i32, position.y as i32);
+                        if let Ok(mapped_pos) = self
+                            .pixels
+                            .window_pos_to_pixel((position.x as f32, position.y as f32))
+                        {
+                            cursor_pos = (mapped_pos.0 as i32, mapped_pos.1 as i32);
+
+                            // Optional: If you implement hover states later,
+                            // you would request a redraw here!
+                        }
                     }
                     WindowEvent::MouseInput { state, button, .. } => {
                         if state == ElementState::Pressed && button == MouseButton::Left {
-                            handle_click(cursor_pos.0, cursor_pos.1, &mut widgets);
+                            for widget in &mut widgets {
+                                widget.handle_click(cursor_pos.0, cursor_pos.1);
+                            }
+
+                            self.window.request_redraw();
                         }
                     }
                     _ => {}
                 },
                 Event::RedrawRequested(_) => {
-                    let mut image = RgbaImage::new(self.width, self.height);
-                    for pixel in image.pixels_mut() {
-                        *pixel = image::Rgba([255, 255, 255, 255]);
-                    }
+                    self.framebuffer
+                        .pixels_mut()
+                        .for_each(|p| *p = image::Rgba([255, 255, 255, 255]));
 
+                    // Draw widgets
                     for widget in &mut widgets {
-                        widget.draw(&mut image);
+                        widget.draw(&mut self.framebuffer);
                     }
 
-                    self.pixels.frame_mut().copy_from_slice(&image.into_raw());
+                    // Render to window
+                    self.pixels
+                        .frame_mut()
+                        .copy_from_slice(&self.framebuffer.clone().into_raw());
                     self.pixels.render().unwrap();
-                }
-                Event::MainEventsCleared => {
-                    self.window.request_redraw();
                 }
                 _ => {}
             }
         });
-    }
-}
-
-use winit::event::{MouseButton, ElementState};
-
-fn handle_click(x: i32, y: i32, widgets: &mut [Box<dyn Widget>]) {
-    for widget in widgets {
-        if let Some(button) = widget.as_any_mut().downcast_mut::<Button>() {
-            let r = button.rect;
-            if x >= r.left() && x <= r.right() && y >= r.top() && y <= r.bottom() {
-                if let Some(callback) = &mut button.on_click {
-                    callback();
-                }
-            }
-        }
     }
 }
