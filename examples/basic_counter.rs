@@ -41,9 +41,9 @@ fn main() {
 
     // Runs the app.
     // The app is asleep until an event happens, like a click.
-    // `was_clicked` checks if a widget with the given ID was clicked.
-    // if it was, `find_widget_mut` finds the widget with that ID
-    // and updates its content.
+    // `was_clicked` checks if a widget with the given ID was 
+    // clicked. If it was, the counter variables is incremented by 1.
+    // `find_widget_mut` finds the widget with that ID and updates its content.
     app.run(move |ui: &mut AppContext| {
         if ui.was_clicked("add_button") {
             counter += 1;
