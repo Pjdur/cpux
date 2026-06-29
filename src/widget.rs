@@ -1,4 +1,4 @@
-// src/widget.rs
+//! Core widget trait, implemented by layouts and widgets.
 use std::any::Any;
 
 /// The core trait that all visual components and layouts must implement.

@@ -46,15 +46,10 @@
 //! ```
 //! 
 
-/// The main part of the framework
 pub mod app;
-/// The button widget
 pub mod button;
-/// `Row` and `Column` containers
 pub mod layouts;
-/// The text widget
 pub mod text;
-/// Core widget trait, implemented by layouts and widgets.
 pub mod widget;
 
 /// Helper utility to load raw TrueType Font (`.ttf`) files into vector memory.
