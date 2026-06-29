@@ -1,3 +1,5 @@
+//! Core of the GUI framework
+
 use crate::widget::Widget;
 use image::{Rgba, RgbaImage};
 use pixels::{Pixels, SurfaceTexture};
@@ -8,7 +10,8 @@ use winit::{
     window::{Window, WindowBuilder},
 };
 
-/// Contains data and context about the App.
+/// Contains data and context about the App, 
+/// like the contained widgets and the ID of a widget clicked during a frame.
 pub struct AppContext {
     /// Vector containing the widgets of the App.
     pub widgets: Vec<Box<dyn Widget>>,

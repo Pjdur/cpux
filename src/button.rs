@@ -1,21 +1,58 @@
+//! A simple button widget
+
 use crate::widget::Widget;
 use image::Rgba;
 use imageproc::rect::Rect;
 use rusttype::{Font, Scale};
 use std::any::Any;
 
+/// A simple button widget designed to be clicked by the user.
+/// 
+/// Example usage:
+/// ```no_run
+/// use cpux::button::Button;
+/// let button = Button::new("Click Me", font.clone());
+/// ```
 pub struct Button {
+    /// The ID of the button, used to identify it in the UI context.
     pub id: Option<String>,
+    /// The text displayed on the button
     pub label: String,
+    /// The rectangle defining the button's position and size.
     pub rect: Rect,
+    /// The font used to render the button's text.
     pub font: Font<'static>,
+    /// The scale at which to render the button's text.
     pub scale: Scale,
+    /// The color of the button's text.
     pub text_color: Rgba<u8>,
+    /// The background color of the button.
     pub bg_color: Rgba<u8>,
 }
 
-// todo: document this later
 impl Button {
+    /// Creates a new button with the specified label and font.
+    /// 
+    /// Example: 
+    /// ```
+    /// use cpux::button:Button;
+    /// let button = Button::new("Click Me", font.clone());
+    /// ```
+    /// This is the simplest button possible, but you may want
+    /// to customise it. For example, adding an ID:
+    /// 
+    /// ```no_run
+    /// let button = Button::new("Click Me", font.clone())
+    ///    .with_id("add_button");
+    /// ```
+    /// 
+    /// Or changing the default blue color:
+    /// 
+    /// ```no_run
+    /// let mut button = Button::new("Click Me", font.clone())
+    ///    .with_id("add_button");
+    /// button.bg_color = image::Rgba([0, 255, 0, 255]); // Green
+    /// ```
     pub fn new(label: impl Into<String>, font: Font<'static>) -> Self {
         let label_str = label.into();
         let scale = Scale { x: 24.0, y: 24.0 };
@@ -57,6 +94,14 @@ impl Button {
         }
     }
 
+    /// Sets the ID of the button, which can be used to identify it.
+    /// 
+    /// Example:
+    /// ```no_run
+    /// use cpux::button:Button;
+    /// let button = Button::new("Click Me", font.clone())
+    ///     .with_id("add_button");
+    /// ```
     pub fn with_id(mut self, id: impl Into<String>) -> Self {
         self.id = Some(id.into());
         self

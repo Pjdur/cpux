@@ -1,3 +1,6 @@
+//! Contains the `Row` and `Column` layout containers, 
+//! which are used to arrange child widgets in a horizontal or vertical line, respectively.
+
 use crate::widget::Widget;
 use image::RgbaImage;
 use std::any::Any;
@@ -16,8 +19,7 @@ pub struct Column {
 }
 
 impl Column {
-    /// Creates a new Column
-    /// 
+    /// Creates a new Column.
     pub fn new() -> Self {
         Self {
             children: Vec::new(),

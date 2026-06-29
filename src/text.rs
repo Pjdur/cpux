@@ -1,10 +1,18 @@
+//! A simple text label widget for displaying text on the screen.
+
 use crate::widget::Widget;
 use image::Rgba;
 use image::RgbaImage;
 use rusttype::{Font, Scale};
 use std::any::Any;
 
-/// A simple text label widget designed to render string contents.
+/// A simple text label widget
+/// 
+/// Example:
+/// ```no_run
+/// use cpux::text::Text;
+/// let text = Text::new("Count: 0", font.clone());
+/// ```
 pub struct Text {
     /// The unique identifier used to find and update this label.
     pub id: Option<String>,
@@ -21,7 +29,28 @@ pub struct Text {
 }
 
 impl Text {
-    /// Creates a new text label with a default size of 24.0.
+    /// Creates a new text widget with a default size of 24.0.
+    /// 
+    /// Example:
+    /// ```no_run
+    /// use cpux::text::Text;
+    /// let text = Text::new("Count: 0", font.clone());
+    /// ```
+    /// 
+    /// You can override the default size by using `Text::with_size()`.
+    /// ```no_run
+    /// use cpux::text::Text;
+    /// let text = Text::new("Count: 0", font.clone())
+    ///     .with_size(32.0)
+    /// ```
+    /// 
+    /// The text widget can also be assigned an ID, which allows it to be found and updated later.
+    /// ```no_run
+    /// use cpux::text::Text;
+    /// let text = Text::new("Count: 0", font.clone())
+    ///     .with_size(32.0)
+    ///     .with_id("counter_text");
+    /// ```
     pub fn new(content: impl Into<String>, font: Font<'static>) -> Self {
         Self {
             id: None,
@@ -33,19 +62,30 @@ impl Text {
         }
     }
 
-    /// Assigns an identifier tag to this text widget.
+    /// Assigns an ID to the text widget, which can be used for updating it.
+    /// ```no_run
+    /// use cpux::text::Text;
+    /// let text = Text::new("Count: 0", font.clone())
+    ///     .with_id("counter_text");
+    /// ```
     pub fn with_id(mut self, id: impl Into<String>) -> Self {
         self.id = Some(id.into());
         self
     }
 
-    /// Overrides the font size scale uniform factor.
+    /// Overrides the text default size of 24.0
+    /// ```no_run
+    /// use cpux::text::Text;
+    /// let text = Text::new("Count: 0", font.clone())
+    ///     .with_size(32.0)
+    /// ```
     pub fn with_size(mut self, size: f32) -> Self {
         self.scale = Scale { x: size, y: size };
         self
     }
 }
 
+// Internal methods
 impl Widget for Text {
     fn set_position(&mut self, x: i32, y: i32) {
         self.position = (x, y);
