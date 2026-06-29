@@ -2,7 +2,7 @@
 
 Retained-mode GUI framework
 
-Try out the `basic_counter` example:
+Try out the `basic_counter` example, it's very simple:
 
 ```bash
 git clone https://github.com/Pjdur/cpux
