@@ -11,6 +11,6 @@ cargo run --example basic_counter
 ```
 
 CPUX is not finished yet though. The code is majorly
-documented. If you want to help, please do!
+documented (the coverage is 96.88% on [docs.rs/cpux](docs.rs/cpux)). If you want to help, please do!
 Open pull requests for any improvements you can make. 
 If you have any questions, feel free to open an issue.
