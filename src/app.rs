@@ -10,9 +10,23 @@ use winit::{
     window::{Window, WindowBuilder},
 };
 
+/// Represents captured keyboard input
+///
+/// # Example
+/// ```no_run
+/// use cpux::app::TypedEvent;
+///
+/// let event = TypedEvent::Char('A');
+/// match event {
+///     TypedEvent::Char(c) => println!("User typed: {}", c),
+///     TypedEvent::Backspace => println!("User pressed backspace"),
+/// }
+/// ```
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum TypedEvent {
+    /// A standard character input event containing the typed Unicode scalar value.
     Char(char),
+    /// A text deletion event triggered by pressing the Backspace key.
     Backspace,
 }
 
