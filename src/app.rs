@@ -5,18 +5,28 @@ use image::{Rgba, RgbaImage};
 use pixels::{Pixels, SurfaceTexture};
 use winit::{
     dpi::LogicalSize,
-    event::{ElementState, Event, MouseButton, WindowEvent},
+    event::{ElementState, Event, KeyboardInput, MouseButton, VirtualKeyCode, WindowEvent},
     event_loop::{ControlFlow, EventLoop},
     window::{Window, WindowBuilder},
 };
 
-/// Contains data and context about the App, 
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum TypedEvent {
+    Char(char),
+    Backspace,
+}
+
+/// Contains data and context about the App,
 /// like the contained widgets and the ID of a widget clicked during a frame.
 pub struct AppContext {
     /// Vector containing the widgets of the App.
     pub widgets: Vec<Box<dyn Widget>>,
     /// The ID string of whichever widget was clicked during a frame.
     pub clicked_id: Option<String>,
+    /// The currently focused widget
+    pub active_focus: Option<String>,
+    /// The last typed character event, if any, during a frame.
+    pub last_typed_char: Option<TypedEvent>,
 }
 
 impl AppContext {
@@ -43,7 +53,7 @@ impl AppContext {
     /// Recursively scans through layouts and widgets to find a matching ID.
     ///
     /// # Example
-   /// ```no_run
+    /// ```no_run
     /// use cpux::app::AppContext;
     /// fn main() {
     ///         // ...                                  
@@ -84,7 +94,7 @@ impl App {
     /// Spawns an OS Window with the given title and dimensions.
     /// Example
     /// ```no_run
-    /// use cpux::app:;App;
+    /// use cpux::app::App;
     /// fn main() {
     ///     let mut app = App::new("Window", 600, 400);
     /// }
@@ -131,21 +141,28 @@ impl App {
         let mut context = AppContext {
             widgets: self.widgets,
             clicked_id: None,
+            active_focus: None,
+            last_typed_char: None,
         };
 
         event_loop.run(move |event, _, control_flow| {
             *control_flow = ControlFlow::Wait;
+
+            // Reset frame-specific event states
             context.clicked_id = None;
+            context.last_typed_char = None;
 
             match event {
                 Event::WindowEvent { event, .. } => match event {
                     WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
+
                     WindowEvent::Resized(size) => {
                         let _ = pixels.resize_surface(size.width, size.height);
                         let _ = pixels.resize_buffer(size.width, size.height);
                         framebuffer = RgbaImage::new(size.width, size.height);
                         window.request_redraw();
                     }
+
                     WindowEvent::CursorMoved { position, .. } => {
                         if let Ok(mapped_pos) =
                             pixels.window_pos_to_pixel((position.x as f32, position.y as f32))
@@ -153,6 +170,7 @@ impl App {
                             cursor_pos = (mapped_pos.0 as i32, mapped_pos.1 as i32);
                         }
                     }
+
                     WindowEvent::MouseInput { state, button, .. } => {
                         if state == ElementState::Pressed && button == MouseButton::Left {
                             for widget in &mut context.widgets {
@@ -166,8 +184,33 @@ impl App {
                             window.request_redraw();
                         }
                     }
+
+                    WindowEvent::ReceivedCharacter(c) => {
+                        // Ignore control characters (like backspace, which is handled below)
+                        if !c.is_control() {
+                            context.last_typed_char = Some(TypedEvent::Char(c));
+                            update_logic(&mut context);
+                            window.request_redraw();
+                        }
+                    }
+
+                    WindowEvent::KeyboardInput {
+                        input:
+                            KeyboardInput {
+                                state: ElementState::Pressed,
+                                virtual_keycode: Some(VirtualKeyCode::Back),
+                                ..
+                            },
+                        ..
+                    } => {
+                        context.last_typed_char = Some(TypedEvent::Backspace);
+                        update_logic(&mut context);
+                        window.request_redraw();
+                    }
+
                     _ => {}
                 },
+
                 Event::RedrawRequested(_) => {
                     framebuffer
                         .pixels_mut()

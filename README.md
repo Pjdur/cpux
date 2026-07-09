@@ -10,6 +10,11 @@ cd cpux
 cargo run --example basic_counter
 ```
 
+Current widgets:
+- Text
+- Buttons
+- Text Input
+
 cpux is not finished yet though. The code is majorly
 documented. If you want to help, please do!
 Open pull requests for any improvements you can make. 

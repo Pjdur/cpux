@@ -51,6 +51,7 @@ pub mod button;
 pub mod layouts;
 pub mod text;
 pub mod widget;
+pub mod text_input;
 
 /// Helper utility to load raw TrueType Font (`.ttf`) files into vector memory.
 /// 
