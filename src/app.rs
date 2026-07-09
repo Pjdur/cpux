@@ -184,10 +184,12 @@ impl App {
                     WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
 
                     WindowEvent::Resized(size) => {
-                        let _ = pixels.resize_surface(size.width, size.height);
-                        let _ = pixels.resize_buffer(size.width, size.height);
-                        framebuffer = RgbaImage::new(size.width, size.height);
-                        window.request_redraw();
+                        if size.width > 0 && size.height > 0 {
+                            let _ = pixels.resize_surface(size.width, size.height);
+                            let _ = pixels.resize_buffer(size.width, size.height);
+                            framebuffer = RgbaImage::new(size.width, size.height);
+                            window.request_redraw();
+                        }
                     }
 
                     WindowEvent::CursorMoved { position, .. } => {
@@ -239,18 +241,21 @@ impl App {
                 },
 
                 Event::RedrawRequested(_) => {
-                    framebuffer
-                        .pixels_mut()
-                        .for_each(|p| *p = Rgba([255, 255, 255, 255]));
+                    let size = window.inner_size();
+                    if size.width > 0 && size.height > 0 {
+                        framebuffer
+                            .pixels_mut()
+                            .for_each(|p| *p = Rgba([255, 255, 255, 255]));
 
-                    for widget in &mut context.widgets {
-                        widget.draw(&mut framebuffer);
+                        for widget in &mut context.widgets {
+                            widget.draw(&mut framebuffer);
+                        }
+
+                        pixels
+                            .frame_mut()
+                            .copy_from_slice(&framebuffer.clone().into_raw());
+                        pixels.render().unwrap();
                     }
-
-                    pixels
-                        .frame_mut()
-                        .copy_from_slice(&framebuffer.clone().into_raw());
-                    pixels.render().unwrap();
                 }
                 _ => {}
             }
