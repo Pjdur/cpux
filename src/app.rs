@@ -22,10 +22,23 @@ use winit::{
 ///     TypedEvent::Backspace => println!("User pressed backspace"),
 /// }
 /// ```
+/// Represents captured keyboard input
+///
+/// # Example
+/// ```no_run
+/// use cpux::app::TypedEvent;
+///
+/// let event = TypedEvent::Char('A');
+/// match event {
+///     TypedEvent::Char(c) => println!("User typed: {}", c),
+///     TypedEvent::Backspace => println!("User pressed backspace"),
+/// }
+/// ```
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum TypedEvent {
     /// A character input event
     Char(char),
+    /// A text deletion event triggered by pressing the Backspace key.
     /// A text deletion event triggered by pressing the Backspace key.
     Backspace,
 }
