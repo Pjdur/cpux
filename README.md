@@ -1,4 +1,4 @@
-# cpux
+# CPUX
 
 Retained-mode GUI framework
 
@@ -15,7 +15,7 @@ Current widgets:
 - Buttons
 - Text Input
 
-cpux is not finished yet though. The code is majorly
-documented. If you want to help, please do!
+CPUX is not finished yet though. The code is majorly
+documented (the coverage is 96.88% on [docs.rs/cpux](https://docs.rs/cpux)). If you want to help, please do!
 Open pull requests for any improvements you can make. 
 If you have any questions, feel free to open an issue.
