@@ -24,7 +24,7 @@ use winit::{
 /// ```
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum TypedEvent {
-    /// A standard character input event containing the typed Unicode scalar value.
+    /// A character input event
     Char(char),
     /// A text deletion event triggered by pressing the Backspace key.
     Backspace,
