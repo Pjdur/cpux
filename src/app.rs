@@ -22,23 +22,10 @@ use winit::{
 ///     TypedEvent::Backspace => println!("User pressed backspace"),
 /// }
 /// ```
-/// Represents captured keyboard input
-///
-/// # Example
-/// ```no_run
-/// use cpux::app::TypedEvent;
-///
-/// let event = TypedEvent::Char('A');
-/// match event {
-///     TypedEvent::Char(c) => println!("User typed: {}", c),
-///     TypedEvent::Backspace => println!("User pressed backspace"),
-/// }
-/// ```
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum TypedEvent {
     /// A character input event
     Char(char),
-    /// A text deletion event triggered by pressing the Backspace key.
     /// A text deletion event triggered by pressing the Backspace key.
     Backspace,
 }
@@ -54,6 +41,8 @@ pub struct AppContext {
     pub active_focus: Option<String>,
     /// The last typed character event, if any, during a frame.
     pub last_typed_char: Option<TypedEvent>,
+    /// Allows the app to keep ticking and updating the UI even when no user input is occurring.
+    pub is_animating: bool,
 }
 
 impl AppContext {
@@ -170,16 +159,30 @@ impl App {
             clicked_id: None,
             active_focus: None,
             last_typed_char: None,
+            is_animating: false, // Start paused to save CPU Usage
         };
 
         event_loop.run(move |event, _, control_flow| {
-            *control_flow = ControlFlow::Wait;
+            // Poll if animating, Wait if idle.
+            if context.is_animating {
+                *control_flow = ControlFlow::Poll;
+            } else {
+                *control_flow = ControlFlow::Wait;
+            }
 
             // Reset frame-specific event states
             context.clicked_id = None;
             context.last_typed_char = None;
 
             match event {
+                // This runs constantly but is only updated when animating
+                Event::MainEventsCleared => {
+                    if context.is_animating {
+                        update_logic(&mut context);
+                        window.request_redraw();
+                    }
+                }
+
                 Event::WindowEvent { event, .. } => match event {
                     WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
 
